@@ -132,7 +132,7 @@ const createMockPlayers = (): Record<string, Player> => {
 };
 
 export const useStore = create<AppState>((set) => ({
-  currentSquare: '환경보호',
+  currentSquare: '광화문광장',
   chants: [],
   userProfile: {
     pubkey: null,

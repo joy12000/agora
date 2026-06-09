@@ -119,8 +119,8 @@ function App() {
       <NetworkFlow />
 
       {/* 중앙 하단: 유저 상태 및 인증 버튼 */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 glass-panel px-6 py-3 flex items-center gap-4 z-20">
-        <div className="text-sm">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 glass-panel px-4 md:px-6 py-2.5 md:py-3 flex items-center gap-3 md:gap-4 z-20 text-xs md:text-sm whitespace-nowrap">
+        <div>
           {userProfile.isVerified ? (
             <span className="text-neon-green flex items-center gap-2 font-bold">
               <span className="relative flex h-2 w-2">
@@ -136,7 +136,7 @@ function App() {
         {!userProfile.isVerified && (
           <button 
             onClick={() => setShowAuthModal(true)}
-            className="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded transition-colors border border-white/20"
+            className="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded transition-colors border border-white/20 cursor-pointer"
           >
             대학생 인증하기
           </button>
@@ -145,19 +145,22 @@ function App() {
 
       {/* 면책 조항 모달 */}
       {showDisclaimer && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in">
-          <div className="glass-panel p-8 max-w-lg w-full">
-            <h2 className="text-2xl font-bold text-neon-pink mb-4">면책 조항 및 이용 약관</h2>
-            <div className="text-sm text-gray-300 space-y-4 mb-6 leading-relaxed">
-              <p>본 광장은 중앙 서버에 데이터를 저장하지 않는 탈중앙화 뷰어(Viewer)입니다.</p>
-              <p>타인의 명예를 훼손하거나 불법적인 발언을 할 경우 모든 민형사상 책임은 발언자 본인에게 있습니다.</p>
-              <p>플랫폼은 신고가 누적된 사용자의 노출을 프론트엔드에서 즉시 차단합니다.</p>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center animate-fade-in p-4">
+          <div className="bg-[#fdfbf7] text-[#4a2c00] border-4 border-[#8c6239] shadow-2xl rounded-2xl p-6 md:p-8 max-w-lg w-full transform transition-all text-left">
+            <div className="flex items-center gap-2 mb-4 justify-center">
+              <span className="text-2xl">🏡</span>
+              <h2 className="text-xl md:text-2xl font-bold text-[#8c6239]">가상 광장 이용 약관</h2>
+            </div>
+            <div className="text-sm text-[#5c4d3c] space-y-4 mb-6 leading-relaxed bg-[#f5ede0] p-4 rounded-xl border border-[#8c6239]/15">
+              <p>🌱 본 광장은 중앙 서버에 개인 데이터를 일절 저장하지 않는 탈중앙화 뷰어(Viewer)입니다.</p>
+              <p>🔒 모든 발언은 Nostr 릴레이 네트워크를 통해 암호화 서명 후 중계되며, 타인의 명예를 훼손하거나 불법적인 발언을 할 경우 모든 법적 책임은 발언자 본인에게 있습니다.</p>
+              <p>🛡️ 커뮤니티 정화 시스템에 의해 신고가 10회 이상 접수된 사용자의 글은 화면에서 즉시 차단(블라인드) 처리됩니다.</p>
             </div>
             <button 
               onClick={() => setShowDisclaimer(false)}
-              className="w-full bg-neon-blue/20 hover:bg-neon-blue/30 text-neon-blue border border-neon-blue/50 py-3 rounded-lg font-bold transition-all"
+              className="w-full bg-[#2b9348] hover:bg-[#207c3b] text-white py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-[0.98] border-b-4 border-[#1e6631] cursor-pointer"
             >
-              동의하고 입장하기
+              약관에 동의하고 공원 입장하기
             </button>
           </div>
         </div>
@@ -165,16 +168,19 @@ function App() {
 
       {/* 대학 인증 모달 */}
       {showAuthModal && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-40 flex items-center justify-center animate-fade-in">
-          <div className="glass-panel p-8 max-w-md w-full relative">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-md z-40 flex items-center justify-center animate-fade-in p-4">
+          <div className="bg-[#fdfbf7] text-[#4a2c00] border-4 border-[#8c6239] shadow-2xl rounded-2xl p-6 md:p-8 max-w-md w-full relative transform transition-all text-left">
             <button 
               onClick={() => setShowAuthModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-gray-400 hover:text-[#4a2c00] transition-colors font-bold text-lg cursor-pointer"
             >
               ✕
             </button>
-            <h2 className="text-xl font-bold text-neon-green mb-2">대학생 인증</h2>
-            <p className="text-xs text-gray-400 mb-6">인증 정보는 서버에 저장되지 않으며, 암호학적 보증서로만 변환됩니다.</p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xl">🎓</span>
+              <h2 className="text-lg md:text-xl font-bold text-[#2b9348]">대학생 인증하기</h2>
+            </div>
+            <p className="text-xs text-[#8c6239] mb-5">인증 정보는 서버에 저장되지 않고 브라우저에 임시 암호학적 보증서로만 변환되어 안전하게 적용됩니다.</p>
             
             <form onSubmit={handleSendLink} className="space-y-4">
               <input 
@@ -182,17 +188,17 @@ function App() {
                 placeholder="대학교 이메일 (@snu.ac.kr 등)" 
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full bg-black/60 border border-white/20 rounded-lg py-3 px-4 text-sm text-white focus:outline-none focus:border-neon-green"
+                className="w-full bg-white border-2 border-[#8c6239]/20 rounded-xl py-3 px-4 text-sm text-[#4a2c00] placeholder:text-[#8c6239]/40 focus:outline-none focus:border-[#2b9348] transition-all"
               />
               <button 
                 type="submit"
-                className="w-full bg-neon-green/20 hover:bg-neon-green/30 text-neon-green border border-neon-green/50 py-3 rounded-lg font-bold transition-all"
+                className="w-full bg-[#d4a373] hover:bg-[#c39262] text-white py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-[0.98] border-b-4 border-[#b78453] cursor-pointer"
               >
-                인증 링크 받기
+                인증 링크 이메일 받기
               </button>
             </form>
             {authStatus && (
-              <p className="mt-4 text-sm text-center text-neon-blue">{authStatus}</p>
+              <p className="mt-4 text-xs text-center text-[#4a90e2] font-semibold font-mono bg-[#4a90e2]/5 py-2 rounded-lg border border-[#4a90e2]/15">{authStatus}</p>
             )}
           </div>
         </div>

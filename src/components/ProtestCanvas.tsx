@@ -244,15 +244,20 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
     let animationId: number;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
     };
     window.addEventListener('resize', resize);
     resize();
 
     // 렌더 프레임 루프
     const render = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const dpr = window.devicePixelRatio || 1;
+      const logicalWidth = canvas.width / dpr;
+      const logicalHeight = canvas.height / dpr;
+      ctx.clearRect(0, 0, logicalWidth, logicalHeight);
       
       const myPubkey = userProfile.pubkey || '';
       const localPlayer = localPlayersRef.current[myPubkey];
@@ -263,11 +268,11 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
         cameraRef.current.y += (localPlayer.y - cameraRef.current.y) * 0.1;
       }
       
-      const centerX = canvas.width / 2 - cameraRef.current.x;
-      const centerY = canvas.height / 2 - cameraRef.current.y;
+      const centerX = logicalWidth / 2 - cameraRef.current.x;
+      const centerY = logicalHeight / 2 - cameraRef.current.y;
 
       // 2. 배경 그리드 및 맵 요소 렌더링
-      drawMap(ctx, centerX, centerY, canvas.width, canvas.height);
+      drawMap(ctx, centerX, centerY, logicalWidth, logicalHeight);
 
       // 3. 클릭 리플(Ripple) 업데이트 및 드로잉
       ctx.save();
@@ -346,8 +351,8 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
     const clickY = e.clientY - rect.top;
 
     // 화면 상의 클릭 위치를 월드 좌표로 변환
-    const worldX = clickX - canvas.width / 2 + cameraRef.current.x;
-    const worldY = clickY - canvas.height / 2 + cameraRef.current.y;
+    const worldX = clickX - rect.width / 2 + cameraRef.current.x;
+    const worldY = clickY - rect.height / 2 + cameraRef.current.y;
 
     // 1. 스토어의 목적지만 변경 (이것은 렌더링 루프 내부가 아니므로 부하가 적습니다)
     updatePlayer(myPubkey, {

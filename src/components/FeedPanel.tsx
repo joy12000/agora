@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { useStore } from '../store';
 import { createChantEvent, createReportEvent } from '../utils/nostr';
 import { nostrService } from '../services/nostrService';
-import { Send, AlertTriangle, Hash, ChevronDown } from 'lucide-react';
+import { Send, AlertTriangle, Hash, ChevronDown, MessageSquare, X } from 'lucide-react';
 
-const TRENDING_SQUARES = ['환경보호', '표현의자유', '학생권리', '연대광장'];
+const TRENDING_SQUARES = ['광화문광장', '서울광장', '청계광장', '여의도공원', '올림픽공원'];
 
 export const FeedPanel: React.FC = () => {
   const { currentSquare, setSquare, chants, userProfile, activeUsers } = useStore();
   const [inputText, setInputText] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   // 실시간 참여자 수 계산 (현재 유저 + 패킷을 주고받은 활성 유저 집계)
   const activeUsersCount = new Set([
@@ -64,21 +65,41 @@ export const FeedPanel: React.FC = () => {
     }
   };
 
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="absolute left-4 top-4 glass-panel px-5 py-3 flex items-center gap-3 z-10 hover:bg-white/10 transition-all border border-[#8c6239]/30 text-[#8c6239] shadow-md pointer-events-auto cursor-pointer rounded-xl group animate-fade-in"
+      >
+        <MessageSquare size={18} className="group-hover:scale-110 transition-transform" />
+        <span className="text-xs font-bold tracking-wider font-sans uppercase">광장 피드</span>
+      </button>
+    );
+  }
+
   return (
-    <div className="absolute left-4 top-4 bottom-4 w-80 glass-panel flex flex-col z-10 animate-slide-in-right p-0 overflow-hidden">
+    <div className="absolute left-4 right-4 md:right-auto top-4 bottom-4 md:w-80 glass-panel flex flex-col z-10 animate-slide-in-right p-0 overflow-hidden">
       {/* Header */}
       <div className="p-5 border-b border-white/10 bg-black/40 relative">
-        <div 
-          className="flex items-center justify-between cursor-pointer group"
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        >
-          <div className="flex items-center gap-2">
-            <Hash className="text-neon-green" size={24} />
-            <h1 className="text-2xl font-bold text-white group-hover:text-neon-green transition-colors">
+        <div className="flex items-center justify-between gap-2">
+          <div 
+            className="flex items-center gap-2 cursor-pointer group flex-1"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            <Hash className="text-neon-green shrink-0" size={24} />
+            <h1 className="text-xl font-bold text-white group-hover:text-neon-green transition-colors truncate">
               {currentSquare}
             </h1>
+            <ChevronDown className={`text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''} shrink-0`} size={16} />
           </div>
-          <ChevronDown className={`text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} size={20} />
+          
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-gray-400 hover:text-white hover:bg-white/10 transition-colors p-1.5 rounded shrink-0"
+            title="Minimize Panel"
+          >
+            <X size={16} />
+          </button>
         </div>
         
         {isDropdownOpen && (
