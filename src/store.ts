@@ -202,6 +202,7 @@ export const useStore = create<AppState>((set) => ({
   }),
   setConnectedRelays: (count) => set({ connectedRelays: count }),
   addRawPacket: (packet) => set((state) => {
+    if (packet.id && state.rawPackets.some(p => p.id === packet.id)) return state;
     // Keep max 50 packets in inspector
     const newPackets = [packet, ...state.rawPackets].slice(0, 50);
     return { rawPackets: newPackets };

@@ -167,6 +167,9 @@ class NostrService {
 
   async publish(event: any) {
     try {
+      if (event.id) {
+        this.processedEventIds.add(event.id);
+      }
       console.log('Publishing event to relays:', event);
       const pubs = this.pool.publish(DEFAULT_RELAYS, event);
       await Promise.any(pubs);
