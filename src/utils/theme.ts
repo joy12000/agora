@@ -11,39 +11,39 @@ export interface TimeTheme {
 export const THEMES: Record<string, TimeTheme> = {
   morning: {
     name: 'morning',
-    label: '새벽 아침',
-    bgStart: '#140c22',
-    bgEnd: '#05020a',
-    accent: '#FF9F1C',
-    accentGlow: 'rgba(255, 159, 28, 0.4)',
-    gridColor: 'rgba(255, 159, 28, 0.04)'
+    label: '새벽 아침 광장 🌅',
+    bgStart: '#FFE5EC',
+    bgEnd: '#F0D6FF',
+    accent: '#FF85A2',
+    accentGlow: 'rgba(255, 133, 162, 0.4)',
+    gridColor: 'rgba(255, 133, 162, 0.06)'
   },
   afternoon: {
     name: 'afternoon',
-    label: '한낮 광장',
-    bgStart: '#0a192f',
-    bgEnd: '#020813',
-    accent: '#39FF14',
-    accentGlow: 'rgba(57, 255, 20, 0.4)',
-    gridColor: 'rgba(57, 255, 20, 0.04)'
+    label: '따사로운 낮 광장 ☀️',
+    bgStart: '#E0F2FE',
+    bgEnd: '#DCFCE7',
+    accent: '#10B981',
+    accentGlow: 'rgba(16, 185, 129, 0.4)',
+    gridColor: 'rgba(16, 185, 129, 0.06)'
   },
   evening: {
     name: 'evening',
-    label: '노을 저녁',
-    bgStart: '#20081e',
-    bgEnd: '#080208',
-    accent: '#FF007F',
-    accentGlow: 'rgba(255, 0, 127, 0.4)',
-    gridColor: 'rgba(255, 0, 127, 0.04)'
+    label: '노을 지는 저녁 광장 🌇',
+    bgStart: '#FFE4E6',
+    bgEnd: '#FEF3C7',
+    accent: '#F59E0B',
+    accentGlow: 'rgba(245, 158, 11, 0.4)',
+    gridColor: 'rgba(245, 158, 11, 0.06)'
   },
   night: {
     name: 'night',
-    label: '심야 광장',
-    bgStart: '#050c18',
-    bgEnd: '#000000',
-    accent: '#00F0FF',
-    accentGlow: 'rgba(0, 240, 255, 0.4)',
-    gridColor: 'rgba(0, 240, 255, 0.04)'
+    label: '별이 빛나는 밤 광장 🌌',
+    bgStart: '#1E293B',
+    bgEnd: '#0F172A',
+    accent: '#FBBF24',
+    accentGlow: 'rgba(251, 191, 36, 0.4)',
+    gridColor: 'rgba(251, 191, 36, 0.08)'
   }
 };
 
