@@ -7,6 +7,7 @@ import { initNostrKeys } from './utils/nostr';
 import { finishEmailSignIn, sendMagicLink } from './utils/firebase';
 import { useStore } from './store';
 import { getThemeByHour, type TimeTheme } from './utils/theme';
+import { resolveUniversityName } from './utils/university';
 
 function App() {
   const { userProfile, currentSquare, setUserProfile } = useStore();
@@ -127,7 +128,7 @@ function App() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-green"></span>
               </span>
-              🎓 {userProfile.university} 인증됨
+              🎓 {resolveUniversityName(userProfile.university)} 인증됨
             </span>
           ) : (
             <span className="text-gray-400">비인증 시민 (익명)</span>

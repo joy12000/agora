@@ -3,6 +3,7 @@ import { useStore } from '../store';
 import type { Player } from '../store';
 import { nostrService } from '../services/nostrService';
 import type { TimeTheme } from '../utils/theme';
+import { resolveUniversityName } from '../utils/university';
 
 interface ClickRipple {
   x: number;
@@ -675,9 +676,13 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
     }
 
     // 7. 이름표 & 대학교 텍스트 (숲속 공원 표지판 스타일)
+    const displayName = player.name.includes('인증_') && player.university
+      ? `인증_${resolveUniversityName(player.university)}`
+      : player.name;
+
     ctx.fillStyle = 'rgba(255, 253, 245, 0.92)'; // 아이보리색 나무판
     ctx.beginPath();
-    const nameWidth = ctx.measureText(player.name).width;
+    const nameWidth = ctx.measureText(displayName).width;
     ctx.roundRect(-nameWidth / 2 - 6, 8, nameWidth + 12, 14, 5);
     ctx.fill();
     ctx.strokeStyle = player.isVerified ? '#2b9348' : '#8c6239'; // 나뭇잎 그린 / 나무 브라운 테두리
@@ -688,12 +693,12 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
     ctx.font = 'bold 9px Pretendard';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(player.name, 0, 15);
+    ctx.fillText(displayName, 0, 15);
 
     if (player.university) {
       ctx.fillStyle = '#b76935'; // 따뜻한 오렌지/브라운 대학교 텍스트
       ctx.font = '9px Pretendard';
-      ctx.fillText(`🌱 ${player.university}`, 0, 28);
+      ctx.fillText(`🌱 ${resolveUniversityName(player.university)}`, 0, 28);
     }
 
     // 8. 실시간 말풍선 (아기자기한 화이트크림 말풍선)

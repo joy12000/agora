@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { resolveUniversityName } from './utils/university';
 
 export interface Chant {
   id: string;
@@ -189,7 +190,7 @@ export const useStore = create<AppState>((set) => ({
         speed: existing?.speed || 2.0,
         skin: newProfile.isVerified ? 'student' : 'hacker',
         name: newProfile.isVerified 
-          ? `인증_${newProfile.university || '대학생'}` 
+          ? `인증_${resolveUniversityName(newProfile.university)}` 
           : `익명_${newProfile.pubkey.substring(0, 4)}`,
         university: newProfile.university || undefined,
         isVerified: newProfile.isVerified,
