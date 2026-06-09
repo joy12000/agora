@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import type { Player } from '../store';
 import { nostrService } from '../services/nostrService';
+import type { TimeTheme } from '../utils/theme';
 
 interface ClickRipple {
   x: number;
@@ -11,9 +12,25 @@ interface ClickRipple {
   alpha: number;
 }
 
-export const ProtestCanvas: React.FC = () => {
+interface ProtestCanvasProps {
+  timeTheme: TimeTheme;
+}
+
+const hexToRgba = (hex: string, alpha: number) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { players, userProfile, currentSquare, updatePlayer } = useStore();
+  
+  const themeRef = useRef(timeTheme);
+  useEffect(() => {
+    themeRef.current = timeTheme;
+  }, [timeTheme]);
   
   // 렉의 원인이었던 Zustand 매 프레임 업데이트를 차단하기 위해
   // 캐릭터의 실시간 좌표(x, y) 연산을 전용 로컬 Ref에서 처리합니다.
@@ -171,7 +188,7 @@ export const ProtestCanvas: React.FC = () => {
         
         ctx.beginPath();
         ctx.arc(centerX + ripple.x, centerY + ripple.y, ripple.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(57, 255, 20, ${ripple.alpha})`;
+        ctx.strokeStyle = hexToRgba(themeRef.current.accent, ripple.alpha);
         ctx.lineWidth = 3;
         ctx.stroke();
         
@@ -276,7 +293,7 @@ export const ProtestCanvas: React.FC = () => {
     const startX = Math.floor((-cx) / gridSize) * gridSize;
     const startY = Math.floor((-cy) / gridSize) * gridSize;
     
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.strokeStyle = themeRef.current.gridColor;
     ctx.lineWidth = 1;
     for (let x = startX; x < startX + w + gridSize; x += gridSize) {
       ctx.beginPath();
@@ -294,12 +311,12 @@ export const ProtestCanvas: React.FC = () => {
     // 2. 광장 외곽 제한 원
     ctx.beginPath();
     ctx.arc(cx, cy, 600, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.1);
     ctx.lineWidth = 4;
     ctx.stroke();
 
     // 3. 중심 동심원 라인들
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.05);
     ctx.lineWidth = 2;
     [150, 300, 450].forEach(r => {
       ctx.beginPath();
@@ -314,7 +331,7 @@ export const ProtestCanvas: React.FC = () => {
     
     // 외곽 회전 홀로그램 링
     ctx.rotate(time * 0.2);
-    ctx.strokeStyle = 'rgba(57, 255, 20, 0.2)';
+    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.2);
     ctx.lineWidth = 2;
     ctx.setLineDash([15, 30]);
     ctx.beginPath();
@@ -322,7 +339,7 @@ export const ProtestCanvas: React.FC = () => {
     ctx.stroke();
     
     ctx.rotate(-time * 0.4);
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
+    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.25);
     ctx.beginPath();
     ctx.arc(0, 0, 55, 0, Math.PI * 2);
     ctx.stroke();
@@ -330,9 +347,9 @@ export const ProtestCanvas: React.FC = () => {
 
     // 모뉴먼트 중앙 발광 코어
     const glowGradient = ctx.createRadialGradient(cx, cy, 5, cx, cy, 45);
-    glowGradient.addColorStop(0, 'rgba(0, 240, 255, 0.6)');
-    glowGradient.addColorStop(0.3, 'rgba(0, 240, 255, 0.3)');
-    glowGradient.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    glowGradient.addColorStop(0, hexToRgba(themeRef.current.accent, 0.6));
+    glowGradient.addColorStop(0.3, hexToRgba(themeRef.current.accent, 0.3));
+    glowGradient.addColorStop(1, hexToRgba(themeRef.current.accent, 0));
     
     ctx.beginPath();
     ctx.arc(cx, cy, 45, 0, Math.PI * 2);
@@ -353,15 +370,15 @@ export const ProtestCanvas: React.FC = () => {
     ctx.lineTo(-15, 10);
     ctx.lineTo(15, 10);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
+    ctx.fillStyle = hexToRgba(themeRef.current.accent, 0.2);
     ctx.fill();
-    ctx.strokeStyle = '#00F0FF';
+    ctx.strokeStyle = themeRef.current.accent;
     ctx.lineWidth = 1.5;
     ctx.stroke();
     
     // 안쪽 회전 마이크로 큐브
     ctx.rotate(-time * 1.5);
-    ctx.fillStyle = '#39FF14';
+    ctx.fillStyle = themeRef.current.accent;
     ctx.fillRect(-4, -4, 8, 8);
     
     ctx.restore();

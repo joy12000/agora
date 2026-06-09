@@ -6,6 +6,7 @@ import { nostrService } from './services/nostrService';
 import { initNostrKeys } from './utils/nostr';
 import { finishEmailSignIn, sendMagicLink } from './utils/firebase';
 import { useStore } from './store';
+import { getThemeByHour, type TimeTheme } from './utils/theme';
 
 function App() {
   const { userProfile, currentSquare, setUserProfile } = useStore();
@@ -13,6 +14,22 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [email, setEmail] = useState('');
   const [authStatus, setAuthStatus] = useState('');
+  const [timeTheme, setTimeTheme] = useState<TimeTheme>(() => getThemeByHour(new Date().getHours()));
+  const [formattedTime, setFormattedTime] = useState('');
+
+  useEffect(() => {
+    const updateTimeAndTheme = () => {
+      const now = new Date();
+      const hour = now.getHours();
+      const min = String(now.getMinutes()).padStart(2, '0');
+      setFormattedTime(`${hour}:${min}`);
+      setTimeTheme(getThemeByHour(hour));
+    };
+
+    updateTimeAndTheme();
+    const timer = setInterval(updateTimeAndTheme, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     // 1. 임시 고유 키쌍 생성
@@ -71,9 +88,31 @@ function App() {
   };
 
   return (
-    <div className="w-full h-screen bg-dark relative overflow-hidden font-sans text-white">
+    <div 
+      className="w-full h-screen relative overflow-hidden font-sans text-white transition-all duration-[2000ms] ease-in-out"
+      style={{
+        backgroundColor: timeTheme.bgEnd,
+        backgroundImage: `radial-gradient(circle at 50% 50%, ${timeTheme.bgStart} 0%, ${timeTheme.bgEnd} 100%)`
+      }}
+    >
+      {/* 상단 중앙: 시간대 및 실시간 시계 배지 */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 glass-panel px-4 py-2 flex items-center gap-3 z-20 text-xs font-semibold tracking-wider animate-fade-in">
+        <span className="flex items-center gap-1.5">
+          <span 
+            className="w-2 h-2 rounded-full animate-pulse transition-all duration-1000"
+            style={{ 
+              backgroundColor: timeTheme.accent, 
+              boxShadow: `0 0 8px ${timeTheme.accent}` 
+            }}
+          />
+          {timeTheme.label}
+        </span>
+        <span className="w-[1px] h-3 bg-white/10" />
+        <span className="text-gray-400 font-mono">{formattedTime}</span>
+      </div>
+
       {/* 360도 무한 캔버스 (배경) */}
-      <ProtestCanvas />
+      <ProtestCanvas timeTheme={timeTheme} />
 
       {/* 오버레이 패널들 */}
       <FeedPanel />
