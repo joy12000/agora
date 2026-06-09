@@ -6,44 +6,54 @@ export interface TimeTheme {
   accent: string;
   accentGlow: string;
   gridColor: string;
+  grassColor: string;
+  pathColor: string;
 }
 
 export const THEMES: Record<string, TimeTheme> = {
   morning: {
     name: 'morning',
-    label: '새벽 아침 광장 🌅',
-    bgStart: '#FFE5EC',
-    bgEnd: '#F0D6FF',
-    accent: '#FF85A2',
-    accentGlow: 'rgba(255, 133, 162, 0.4)',
-    gridColor: 'rgba(255, 133, 162, 0.06)'
+    label: '🌅 아침 안개 공원',
+    bgStart: '#2c223c',
+    bgEnd: '#171221',
+    accent: '#ffb703',
+    accentGlow: 'rgba(255, 183, 3, 0.3)',
+    gridColor: 'rgba(255, 183, 3, 0.06)',
+    grassColor: '#2f483a', // 아침의 어슴푸레한 초록
+    pathColor: '#473d38'   // 어두운 흙길 톤
   },
   afternoon: {
     name: 'afternoon',
-    label: '따사로운 낮 광장 ☀️',
-    bgStart: '#E0F2FE',
-    bgEnd: '#DCFCE7',
-    accent: '#10B981',
-    accentGlow: 'rgba(16, 185, 129, 0.4)',
-    gridColor: 'rgba(16, 185, 129, 0.06)'
+    label: '☀️ 햇살 푸른 광장',
+    bgStart: '#1d3557',
+    bgEnd: '#0f172a',
+    accent: '#4ade80',
+    accentGlow: 'rgba(74, 222, 128, 0.3)',
+    gridColor: 'rgba(74, 222, 128, 0.06)',
+    grassColor: '#386641', // 푸르른 햇살 아래 잔디
+    pathColor: '#8b8c89'   // 밝은 회색 돌길
   },
   evening: {
     name: 'evening',
-    label: '노을 지는 저녁 광장 🌇',
-    bgStart: '#FFE4E6',
-    bgEnd: '#FEF3C7',
-    accent: '#F59E0B',
-    accentGlow: 'rgba(245, 158, 11, 0.4)',
-    gridColor: 'rgba(245, 158, 11, 0.06)'
+    label: '🌇 노을 지는 공원',
+    bgStart: '#4a233b',
+    bgEnd: '#220f1b',
+    accent: '#ff7096',
+    accentGlow: 'rgba(255, 112, 150, 0.3)',
+    gridColor: 'rgba(255, 112, 150, 0.06)',
+    grassColor: '#4c3b30', // 노을빛을 머금은 마른 잔디
+    pathColor: '#5c4033'   // 따뜻한 황토빛 흙길
   },
   night: {
     name: 'night',
-    label: '별이 빛나는 밤 광장 🌌',
-    bgStart: '#1E293B',
-    bgEnd: '#0F172A',
-    accent: '#FBBF24',
+    label: '🌌 별빛 심야 광장',
+    bgStart: '#0f172a',
+    bgEnd: '#020617',
+    accent: '#fbbf24',
     accentGlow: 'rgba(251, 191, 36, 0.4)',
-    gridColor: 'rgba(251, 191, 36, 0.08)'
+    gridColor: 'rgba(251, 191, 36, 0.06)',
+    grassColor: '#132a13', // 밤의 짙은 어두운 잔디
+    pathColor: '#25282a'   // 어두운 아스팔트/돌바닥
   }
 };
 

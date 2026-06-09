@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dark: #050505;
-  --color-darker: #000000;
-  --color-neon-green: #39FF14;
-  --color-neon-blue: #00F0FF;
-  --color-neon-pink: #FF007F;
-  --color-neon-purple: #B026FF;
+  --color-dark: #1e1e1e;
+  --color-darker: #121212;
+  --color-neon-green: #2b9348; /* 아늑한 초록색 */
+  --color-neon-blue: #4a90e2;  /* 하늘색 */
+  --color-neon-pink: #e76f51;  /* 버섯 빨간색 */
+  --color-neon-purple: #b76935; /* 나무 갈색 */
 }
 
 @layer base {

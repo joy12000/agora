@@ -23,6 +23,95 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+const drawTree = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+  ctx.save();
+  ctx.translate(x, y);
+  // 그림자
+  ctx.beginPath();
+  ctx.ellipse(0, 10, 12, 5, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+  ctx.fill();
+  // 줄기
+  ctx.fillStyle = '#7a5c43';
+  ctx.fillRect(-3.5, -2, 7, 12);
+  // 잎사귀 (동글동글한 나무)
+  ctx.beginPath();
+  ctx.arc(0, -9, 14, 0, Math.PI * 2);
+  ctx.fillStyle = '#2d6a4f';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(-4, -13, 10, 0, Math.PI * 2);
+  ctx.fillStyle = '#40916c';
+  ctx.fill();
+  ctx.restore();
+};
+
+const drawFlower = (ctx: CanvasRenderingContext2D, x: number, y: number, color: string) => {
+  ctx.save();
+  ctx.translate(x, y);
+  // 줄기/잎
+  ctx.fillStyle = '#1b4332';
+  ctx.fillRect(-0.7, 0, 1.4, 5);
+  // 꽃잎 5개
+  ctx.fillStyle = color;
+  for (let i = 0; i < 5; i++) {
+    ctx.rotate((Math.PI * 2) / 5);
+    ctx.beginPath();
+    ctx.arc(0, -3, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // 가운데 노란색
+  ctx.beginPath();
+  ctx.arc(0, 0, 1.2, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffd166';
+  ctx.fill();
+  ctx.restore();
+};
+
+const drawDuck = (ctx: CanvasRenderingContext2D, x: number, y: number, time: number) => {
+  ctx.save();
+  ctx.translate(x, y);
+  const bobY = Math.sin(time * 3) * 1.5;
+  ctx.translate(0, bobY);
+  
+  // 몸통
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 7, 5, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffd166';
+  ctx.fill();
+  
+  // 머리
+  ctx.beginPath();
+  ctx.arc(4, -5, 4.2, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // 눈
+  ctx.beginPath();
+  ctx.arc(5, -6, 0.7, 0, Math.PI * 2);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+  
+  // 부리
+  ctx.beginPath();
+  ctx.moveTo(8, -6);
+  ctx.lineTo(11, -5);
+  ctx.lineTo(8, -4);
+  ctx.closePath();
+  ctx.fillStyle = '#f3722c';
+  ctx.fill();
+  
+  // 꼬리
+  ctx.beginPath();
+  ctx.moveTo(-5, -1);
+  ctx.lineTo(-8, -4);
+  ctx.lineTo(-4, -2);
+  ctx.closePath();
+  ctx.fillStyle = '#e9c46a';
+  ctx.fill();
+  
+  ctx.restore();
+};
+
 export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { players, userProfile, currentSquare, updatePlayer } = useStore();
@@ -286,129 +375,157 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
     });
   };
 
-  // 가상 맵(광장) 그리기 함수
+  // 가상 맵(광장) 그리기 함수 (Cozy RPG 스타일)
   const drawMap = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number) => {
-    // 1. 보도블록 그리드 패턴
-    const gridSize = 80;
-    const startX = Math.floor((-cx) / gridSize) * gridSize;
-    const startY = Math.floor((-cy) / gridSize) * gridSize;
-    
-    ctx.strokeStyle = themeRef.current.gridColor;
-    ctx.lineWidth = 1;
-    for (let x = startX; x < startX + w + gridSize; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(cx + x, 0);
-      ctx.lineTo(cx + x, h);
-      ctx.stroke();
-    }
-    for (let y = startY; y < startY + h + gridSize; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, cy + y);
-      ctx.lineTo(w, cy + y);
-      ctx.stroke();
-    }
+    const time = Date.now() / 1000;
 
-    // 2. 광장 외곽 제한 원
+    // 1. 전체 화면 잔디밭 색상으로 채움
+    ctx.fillStyle = themeRef.current.grassColor;
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. 십자형 돌길(Stone Pavement) 산책로 그리기 (분수대 중심)
+    ctx.fillStyle = themeRef.current.pathColor;
+    
+    // 가로 산책로
+    ctx.fillRect(cx - 600, cy - 30, 1200, 60);
+    // 세로 산책로
+    ctx.fillRect(cx - 30, cy - 600, 60, 1200);
+
+    // 중앙 원형 돌길 광장
+    ctx.beginPath();
+    ctx.arc(cx, cy, 80, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 3. 캔버스를 기준으로 잔디밭 위의 목재 울타리(경계선) 그리기
+    ctx.strokeStyle = '#8c6239';
+    ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.arc(cx, cy, 600, 0, Math.PI * 2);
-    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.1);
-    ctx.lineWidth = 4;
     ctx.stroke();
-
-    // 3. 중심 동심원 라인들
-    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.05);
-    ctx.lineWidth = 2;
-    [150, 300, 450].forEach(r => {
+    
+    // 울타리 기둥들 그리기
+    const postCount = 72;
+    ctx.fillStyle = '#a67c52';
+    for (let i = 0; i < postCount; i++) {
+      const angle = (i * Math.PI * 2) / postCount;
+      const px = cx + Math.cos(angle) * 600;
+      const py = cy + Math.sin(angle) * 600;
       ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.arc(px, py, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#5c3d24';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
+    }
+
+    // 4. 나무들 배치하기
+    const treePositions = [
+      { x: -220, y: -220 },
+      { x: 220, y: -220 },
+      { x: -220, y: 220 },
+      { x: 220, y: 220 },
+      { x: -380, y: -120 },
+      { x: 380, y: -120 },
+      { x: -380, y: 120 },
+      { x: 380, y: 120 },
+      { x: -120, y: -380 },
+      { x: 120, y: -380 },
+      { x: -120, y: 380 },
+      { x: 120, y: 380 }
+    ];
+    treePositions.forEach(p => {
+      drawTree(ctx, cx + p.x, cy + p.y);
     });
 
-    // 4. 중앙 홀로그램 모뉴먼트
-    const time = Date.now() / 1000;
+    // 5. 예쁜 꽃들 배치하기
+    const flowerPositions = [
+      { x: -120, y: -120, color: '#f26419' },
+      { x: -140, y: -100, color: '#f6bd60' },
+      { x: -100, y: -140, color: '#f28482' },
+      
+      { x: 120, y: -120, color: '#f28482' },
+      { x: 140, y: -140, color: '#f6bd60' },
+      
+      { x: -120, y: 120, color: '#f6bd60' },
+      { x: 120, y: 120, color: '#f26419' }
+    ];
+    flowerPositions.forEach(f => {
+      drawFlower(ctx, cx + f.x, cy + f.y, f.color);
+    });
+
+    // 6. 중앙 아기자기 분수대 (Central Fountain)
     ctx.save();
     ctx.translate(cx, cy);
-    
-    // 외곽 회전 홀로그램 링
-    ctx.rotate(time * 0.2);
-    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.2);
-    ctx.lineWidth = 2;
-    ctx.setLineDash([15, 30]);
-    ctx.beginPath();
-    ctx.arc(0, 0, 75, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    ctx.rotate(-time * 0.4);
-    ctx.strokeStyle = hexToRgba(themeRef.current.accent, 0.25);
-    ctx.beginPath();
-    ctx.arc(0, 0, 55, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.restore();
 
-    // 모뉴먼트 중앙 발광 코어
-    const glowGradient = ctx.createRadialGradient(cx, cy, 5, cx, cy, 45);
-    glowGradient.addColorStop(0, hexToRgba(themeRef.current.accent, 0.6));
-    glowGradient.addColorStop(0.3, hexToRgba(themeRef.current.accent, 0.3));
-    glowGradient.addColorStop(1, hexToRgba(themeRef.current.accent, 0));
-    
+    // 석조 분수대 테두리
     ctx.beginPath();
-    ctx.arc(cx, cy, 45, 0, Math.PI * 2);
-    ctx.fillStyle = glowGradient;
+    ctx.arc(0, 0, 45, 0, Math.PI * 2);
+    ctx.fillStyle = '#b8b8b8';
+    ctx.fill();
+    ctx.strokeStyle = '#8c8c8c';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // 분수 안 물
+    ctx.beginPath();
+    ctx.arc(0, 0, 38, 0, Math.PI * 2);
+    ctx.fillStyle = '#a2d2ff';
     ctx.fill();
 
-    // 5. 모뉴먼트 피라미드 크리스탈 탑 드로잉
-    ctx.save();
-    ctx.translate(cx, cy - 10);
-    const floatY = Math.sin(time * 2) * 5;
-    ctx.translate(0, floatY);
-    
-    ctx.rotate(time * 0.8);
-    
-    // 유리 피라미드 그리기
+    // 동적 물줄기 퍼짐 링 애니메이션
+    const waveRadius = ((Date.now() / 2000) % 1) * 32;
     ctx.beginPath();
-    ctx.moveTo(0, -25);
-    ctx.lineTo(-15, 10);
-    ctx.lineTo(15, 10);
-    ctx.closePath();
-    ctx.fillStyle = hexToRgba(themeRef.current.accent, 0.2);
-    ctx.fill();
-    ctx.strokeStyle = themeRef.current.accent;
+    ctx.arc(0, 0, waveRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255, 255, 255, ${1 - waveRadius / 32})`;
     ctx.lineWidth = 1.5;
     ctx.stroke();
-    
-    // 안쪽 회전 마이크로 큐브
-    ctx.rotate(-time * 1.5);
-    ctx.fillStyle = themeRef.current.accent;
-    ctx.fillRect(-4, -4, 8, 8);
-    
+
+    // 분수 중심부 솟구치는 물방울 발광 코어
+    const coreGlow = 10 + Math.abs(Math.sin(time * 6)) * 4;
+    const waterGlow = ctx.createRadialGradient(0, 0, 2, 0, 0, coreGlow);
+    waterGlow.addColorStop(0, '#ffffff');
+    waterGlow.addColorStop(0.4, '#e0f2fe');
+    waterGlow.addColorStop(1, 'rgba(162, 210, 255, 0)');
+    ctx.beginPath();
+    ctx.arc(0, 0, coreGlow, 0, Math.PI * 2);
+    ctx.fillStyle = waterGlow;
+    ctx.fill();
+
+    // 노란색 러버덕 분수 안에서 빙글빙글 돌기/둥둥 뜨기
+    const duckAngle = time * 0.5;
+    const duckDist = 20;
+    const dx = Math.cos(duckAngle) * duckDist;
+    const dy = Math.sin(duckAngle) * duckDist;
+    drawDuck(ctx, dx, dy, time);
+
     ctx.restore();
   };
 
-  // 귀여운 2D 벡터 아바타 그리기 함수
+  // 귀여운 2D 벡터 아바타 그리기 함수 (동물의 숲 / Cozy RPG 스타일)
   const drawAvatar = (ctx: CanvasRenderingContext2D, player: Player, cycle: number, isMoving: boolean) => {
     const bobY = isMoving ? Math.abs(Math.sin(cycle)) * -3.5 : Math.sin(Date.now() / 250) * -0.8;
     
-    let bodyColor = '#2b2b2b';
-    let detailColor = '#39FF14';
+    let bodyColor = '#a67c52'; // 기본 다람쥐/갈색 동물
     
     if (player.skin === 'student') {
-      bodyColor = '#1e3c72';
-      detailColor = '#FFD700';
+      bodyColor = '#4a90e2'; // 파란 토끼
     } else if (player.skin === 'eco') {
-      bodyColor = '#1b4d3e';
-      detailColor = '#FF69B4';
+      bodyColor = '#2a9d8f'; // 초록 버섯돌이
     }
 
     // 1. 그림자
     ctx.beginPath();
     ctx.ellipse(0, 3, 10, 4, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
     ctx.fill();
 
     // 발
     if (isMoving) {
       const footOffset = Math.sin(cycle) * 5;
-      ctx.fillStyle = '#111';
+      ctx.fillStyle = '#444';
       ctx.beginPath();
       ctx.arc(-5, 2 + (footOffset > 0 ? -2 : 0), 3.5, 0, Math.PI * 2);
       ctx.fill();
@@ -416,14 +533,80 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
       ctx.arc(5, 2 + (footOffset < 0 ? -2 : 0), 3.5, 0, Math.PI * 2);
       ctx.fill();
     } else {
-      ctx.fillStyle = '#111';
+      ctx.fillStyle = '#444';
       ctx.beginPath();
       ctx.arc(-4, 2, 3.5, 0, Math.PI * 2);
       ctx.arc(4, 2, 3.5, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // 2. 몸통
+    // 2. 동물 귀 / 버섯 갓 장식 (몸통 전에 귀를 먼저 그려서 레이어 정리)
+    if (player.skin === 'student') {
+      // 파란 토끼 귀
+      ctx.fillStyle = '#4a90e2';
+      // 왼쪽 귀
+      ctx.save();
+      ctx.translate(-5, -24 + bobY);
+      ctx.rotate(-Math.PI / 12);
+      ctx.beginPath();
+      ctx.roundRect(-2.5, -10, 5, 12, 2.5);
+      ctx.fill();
+      ctx.fillStyle = '#ffccd5';
+      ctx.beginPath();
+      ctx.roundRect(-1.2, -8, 2.4, 9, 1.2);
+      ctx.fill();
+      ctx.restore();
+      // 오른쪽 귀
+      ctx.fillStyle = '#4a90e2';
+      ctx.save();
+      ctx.translate(5, -24 + bobY);
+      ctx.rotate(Math.PI / 12);
+      ctx.beginPath();
+      ctx.roundRect(-2.5, -10, 5, 12, 2.5);
+      ctx.fill();
+      ctx.fillStyle = '#ffccd5';
+      ctx.beginPath();
+      ctx.roundRect(-1.2, -8, 2.4, 9, 1.2);
+      ctx.fill();
+      ctx.restore();
+    } else if (player.skin === 'eco') {
+      // 초록/빨강 버섯 갓 (머리 뒤/위에 그려짐)
+      ctx.fillStyle = '#e76f51'; // 포근한 버섯돌이 오렌지레드
+      ctx.beginPath();
+      ctx.arc(0, -24 + bobY, 13, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+      
+      // 버섯 갓 점박이
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-6, -28 + bobY, 2, 0, Math.PI * 2);
+      ctx.arc(6, -26 + bobY, 2, 0, Math.PI * 2);
+      ctx.arc(0, -32 + bobY, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // 기본 갈색 다람쥐 귀
+      ctx.fillStyle = '#a67c52';
+      // 왼쪽 귀
+      ctx.beginPath();
+      ctx.arc(-7, -25 + bobY, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffccd5';
+      ctx.beginPath();
+      ctx.arc(-7, -25 + bobY, 2, 0, Math.PI * 2);
+      ctx.fill();
+      // 오른쪽 귀
+      ctx.fillStyle = '#a67c52';
+      ctx.beginPath();
+      ctx.arc(7, -25 + bobY, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffccd5';
+      ctx.beginPath();
+      ctx.arc(7, -25 + bobY, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 3. 몸통
     ctx.beginPath();
     ctx.arc(0, -10 + bobY, 11, 0, Math.PI, true);
     ctx.lineTo(-11, bobY);
@@ -431,101 +614,102 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
     ctx.closePath();
     ctx.fillStyle = bodyColor;
     ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
     ctx.stroke();
 
-    // 3. 머리 후드
+    // 4. 머리 후드
     ctx.beginPath();
     ctx.arc(0, -21 + bobY, 10.5, 0, Math.PI * 2);
     ctx.fillStyle = bodyColor;
     ctx.fill();
 
-    // 4. 고글/바이저
+    // 5. 살구색 귀여운 얼굴 & 이목구비
     ctx.beginPath();
-    ctx.roundRect(-7.5, -23 + bobY, 15, 6, 2.5);
-    ctx.fillStyle = '#050505';
+    ctx.arc(0, -20 + bobY, 7.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff5eb'; // 크림 살구색 얼굴판
     ctx.fill();
-    ctx.strokeStyle = detailColor;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    
-    ctx.fillStyle = detailColor;
-    ctx.fillRect(-5, -21 + bobY, 10, 1.5);
 
-    // 5. 대학생 학사모 장식
+    // 눈 (웃는 모습 또는 동그란 눈)
+    ctx.fillStyle = '#3a2e2b'; // 부드러운 다크 브라운 눈
+    ctx.beginPath();
+    ctx.arc(-3, -20 + bobY, 1.2, 0, Math.PI * 2);
+    ctx.arc(3, -20 + bobY, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 볼터치
+    ctx.fillStyle = 'rgba(255, 120, 120, 0.45)';
+    ctx.beginPath();
+    ctx.arc(-5.5, -17.5 + bobY, 1.8, 0, Math.PI * 2);
+    ctx.arc(5.5, -17.5 + bobY, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 6. 대학생 학사모 장식 (인증 유저만 - 귀 위에 씌우기)
     if (player.isVerified) {
       ctx.save();
-      ctx.translate(0, -31 + bobY);
+      ctx.translate(0, -32 + bobY);
       
-      ctx.fillStyle = '#181818';
-      ctx.strokeStyle = '#FFD700';
+      ctx.fillStyle = '#5c4d3c'; // 우드브라운 톤 학사모
+      ctx.strokeStyle = '#d4a373';
       ctx.lineWidth = 1;
       
       ctx.beginPath();
-      ctx.moveTo(0, -4);
-      ctx.lineTo(12, 0);
-      ctx.lineTo(0, 4);
-      ctx.lineTo(-12, 0);
+      ctx.moveTo(0, -3);
+      ctx.lineTo(10, 0);
+      ctx.lineTo(0, 3);
+      ctx.lineTo(-10, 0);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
       
       ctx.beginPath();
-      ctx.arc(0, 1, 5, 0, Math.PI);
-      ctx.fillStyle = '#111';
+      ctx.arc(0, 1, 4, 0, Math.PI);
+      ctx.fillStyle = '#403d39';
       ctx.fill();
-
-      ctx.strokeStyle = '#FFD700';
-      ctx.lineWidth = 0.8;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-9, 3);
-      ctx.lineTo(-9, 7);
-      ctx.stroke();
 
       ctx.restore();
     }
 
-    // 6. 이름표 & 대학교 텍스트
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+    // 7. 이름표 & 대학교 텍스트 (숲속 공원 표지판 스타일)
+    ctx.fillStyle = 'rgba(255, 253, 245, 0.92)'; // 아이보리색 나무판
     ctx.beginPath();
     const nameWidth = ctx.measureText(player.name).width;
-    ctx.roundRect(-nameWidth / 2 - 6, 8, nameWidth + 12, 14, 4);
+    ctx.roundRect(-nameWidth / 2 - 6, 8, nameWidth + 12, 14, 5);
     ctx.fill();
-    ctx.strokeStyle = player.isVerified ? 'rgba(57, 255, 20, 0.25)' : 'rgba(255,255,255,0.06)';
+    ctx.strokeStyle = player.isVerified ? '#2b9348' : '#8c6239'; // 나뭇잎 그린 / 나무 브라운 테두리
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
-    ctx.fillStyle = player.isVerified ? '#39FF14' : '#ffffff';
+    ctx.fillStyle = '#4a2c00'; // 부드러운 다크 우드 텍스트
     ctx.font = 'bold 9px Pretendard';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(player.name, 0, 15);
 
     if (player.university) {
-      ctx.fillStyle = '#FFD700';
+      ctx.fillStyle = '#b76935'; // 따뜻한 오렌지/브라운 대학교 텍스트
       ctx.font = '9px Pretendard';
-      ctx.fillText(`🎓 ${player.university}`, 0, 28);
+      ctx.fillText(`🌱 ${player.university}`, 0, 28);
     }
 
-    // 7. 실시간 말풍선
+    // 8. 실시간 말풍선 (아기자기한 화이트크림 말풍선)
     if (player.currentChant && Date.now() < player.currentChant.expiresAt) {
       const bubbleText = player.currentChant.text;
-      ctx.font = '500 11px Pretendard';
+      ctx.font = 'bold 11px Pretendard';
       const textWidth = ctx.measureText(bubbleText).width;
       const bubbleW = Math.max(70, textWidth + 16);
       const bubbleH = 26;
       const bubbleX = -bubbleW / 2;
       const bubbleY = -52 + bobY;
 
-      ctx.fillStyle = 'rgba(5, 5, 5, 0.85)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
       ctx.beginPath();
-      ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 6);
+      ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 8);
       ctx.fill();
-      ctx.strokeStyle = player.isVerified ? '#39FF14' : 'rgba(255, 255, 255, 0.2)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = player.isVerified ? '#2b9348' : '#8c6239';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.fillStyle = 'rgba(5, 5, 5, 0.85)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
       ctx.beginPath();
       ctx.moveTo(-5, bubbleY + bubbleH);
       ctx.lineTo(5, bubbleY + bubbleH);
@@ -533,14 +717,14 @@ export const ProtestCanvas: React.FC<ProtestCanvasProps> = ({ timeTheme }) => {
       ctx.closePath();
       ctx.fill();
       
-      ctx.strokeStyle = player.isVerified ? '#39FF14' : 'rgba(255, 255, 255, 0.2)';
+      ctx.strokeStyle = player.isVerified ? '#2b9348' : '#8c6239';
       ctx.beginPath();
       ctx.moveTo(-5, bubbleY + bubbleH);
       ctx.lineTo(0, bubbleY + bubbleH + 4);
       ctx.lineTo(5, bubbleY + bubbleH);
       ctx.stroke();
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#2b1c00';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(bubbleText, 0, bubbleY + bubbleH / 2);
