@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import type { Player } from '../store';
 import { nostrService } from '../services/nostrService';
